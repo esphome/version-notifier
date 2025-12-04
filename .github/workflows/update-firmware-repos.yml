@@ -20,6 +20,7 @@ jobs:
     outputs:
       matrix: ${{ steps.matrix.outputs.repos }}
       version: ${{ steps.version.outputs.esphome_version }}
+      is_stable: ${{ steps.version.outputs.is_stable }}
     steps:
       - name: Checkout
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
@@ -30,11 +31,19 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            echo "esphome_version=${{ inputs.esphome_version }}" >> $GITHUB_OUTPUT
+            VERSION="${{ inputs.esphome_version }}"
           else
             # Get inputs from the triggering workflow run
             VERSION=$(gh api /repos/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }} --jq '.inputs.esphome_version')
-            echo "esphome_version=${VERSION}" >> $GITHUB_OUTPUT
+          fi
+          echo "esphome_version=${VERSION}" >> $GITHUB_OUTPUT
+
+          # Check if version is stable (not beta or dev)
+          if [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "is_stable=true" >> $GITHUB_OUTPUT
+          else
+            echo "Skipping non-stable version: $VERSION"
+            echo "is_stable=false" >> $GITHUB_OUTPUT
           fi
 
       - name: Load configuration
@@ -46,6 +55,7 @@ jobs:
   update-repo:
     name: Update ${{ matrix.repo }}
     needs: prepare
+    if: needs.prepare.outputs.is_stable == 'true'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
