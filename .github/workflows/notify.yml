@@ -1,0 +1,24 @@
+name: Notify
+
+# The purpose of this workflow is only to receive the incoming workflow_dispatch event
+# In this repo lives other workflows that are monitoring this job and will automatically
+# run when this one is successful. This makes maintenance easier down the line and turns
+# each new workflow into a subscription model instead of this one having to be modified
+# to get longer and longer to dispatch those jobs.
+
+on:
+  workflow_dispatch:
+    inputs:
+      esphome_version:
+        description: "ESPHome version (e.g., 2024.1.0)"
+        required: true
+        type: string
+
+jobs:
+  notify:
+    name: Notify
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify
+        run: |
+          echo "ESPHome version: ${{ inputs.esphome_version }}"

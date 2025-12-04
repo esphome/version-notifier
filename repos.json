@@ -1,0 +1,12 @@
+[
+  {
+    "repo": "esphome/firmware",
+    "repo_name": "firmware",
+    "workflow_file": "build.yml"
+  },
+  {
+    "repo": "esphome/bluetooth-proxies",
+    "repo_name": "bluetooth-proxies",
+    "workflow_file": "build.yml"
+  }
+]
