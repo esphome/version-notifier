@@ -25,16 +25,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
+      - name: Download version artifact
+        if: github.event_name == 'workflow_run'
+        uses: actions/download-artifact@v4
+        with:
+          name: esphome-version
+          github-token: ${{ github.token }}
+          run-id: ${{ github.event.workflow_run.id }}
+
       - name: Get ESPHome version
         id: version
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
           if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
             VERSION="${{ inputs.esphome_version }}"
           else
-            # Get inputs from the triggering workflow run
-            VERSION=$(gh api /repos/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }} --jq '.inputs.esphome_version')
+            VERSION=$(cat esphome_version.txt)
           fi
           echo "esphome_version=${VERSION}" >> $GITHUB_OUTPUT
 
