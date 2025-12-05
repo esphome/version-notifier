@@ -1,12 +1,45 @@
 [
   {
-    "repo": "esphome/firmware",
-    "repo_name": "firmware",
-    "workflow_file": "build.yml"
-  },
-  {
     "repo": "esphome/bluetooth-proxies",
     "repo_name": "bluetooth-proxies",
-    "workflow_file": "build.yml"
+    "workflow_files": [
+      "build.yml"
+    ]
+  },
+  {
+    "repo": "esphome/firmware",
+    "repo_name": "firmware",
+    "workflow_files": [
+      "build.yml"
+    ]
+  },
+  {
+    "repo": "esphome/home-assistant-voice-pe",
+    "repo_name": "home-assistant-voice-pe",
+    "workflow_files": [
+      "build.yml"
+    ]
+  },
+  {
+    "repo": "esphome/media-players",
+    "repo_name": "media-players",
+    "workflow_files": [
+      "build.yml"
+    ]
+  },
+  {
+    "repo": "esphome/project-template",
+    "repo_name": "project-template",
+    "workflow_files": [
+      "publish-firmware.yml"
+    ]
+  },
+  {
+    "repo": "esphome/wake-word-voice-assistants",
+    "repo_name": "wake-word-voice-assistants",
+    "workflow_files": [
+      "build.yml",
+      "build-minimal.yml"
+    ]
   }
 ]

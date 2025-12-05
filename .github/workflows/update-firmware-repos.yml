@@ -83,34 +83,46 @@ jobs:
           token: ${{ steps.generate-token.outputs.token }}
           path: target-repo
 
-      - name: Update ESPHome version in workflow
+      - name: Update ESPHome version in workflows
         id: update
         working-directory: target-repo
         run: |
-          WORKFLOW_FILE=".github/workflows/${{ matrix.workflow_file }}"
           VERSION="${{ needs.prepare.outputs.version }}"
+          UPDATED=false
+          CURRENT_VERSION="unknown"
 
-          if [ ! -f "$WORKFLOW_FILE" ]; then
-            echo "::error::Workflow file not found: $WORKFLOW_FILE"
-            exit 1
-          fi
+          # Parse workflow_files JSON array
+          WORKFLOW_FILES='${{ toJson(matrix.workflow_files) }}'
 
-          # Extract current version for comparison
-          CURRENT_VERSION=$(grep -oP 'esphome-version:\s*["\x27]?\K[0-9]+\.[0-9]+\.[0-9]+' "$WORKFLOW_FILE" | head -1 || echo "unknown")
-          echo "Current version: $CURRENT_VERSION"
-          echo "Target version: $VERSION"
+          for FILE in $(echo "$WORKFLOW_FILES" | jq -r '.[]'); do
+            WORKFLOW_FILE=".github/workflows/$FILE"
 
-          if [ "$CURRENT_VERSION" = "$VERSION" ]; then
-            echo "Version already up to date"
-            echo "updated=false" >> $GITHUB_OUTPUT
-            exit 0
-          fi
+            if [ ! -f "$WORKFLOW_FILE" ]; then
+              echo "::warning::Workflow file not found: $WORKFLOW_FILE"
+              continue
+            fi
 
-          # Update the esphome-version in the workflow file
-          # Handles both quoted and unquoted versions
-          sed -i -E "s/(esphome-version:\s*[\"']?)[0-9]+\.[0-9]+\.[0-9]+([\"']?)/\1${VERSION}\2/g" "$WORKFLOW_FILE"
+            # Extract current version for comparison
+            FILE_VERSION=$(grep -oP 'esphome-version:\s*["\x27]?\K[0-9]+\.[0-9]+\.[0-9]+' "$WORKFLOW_FILE" | head -1 || echo "unknown")
+            echo "File: $FILE - Current version: $FILE_VERSION, Target version: $VERSION"
 
-          echo "updated=true" >> $GITHUB_OUTPUT
+            if [ "$FILE_VERSION" = "$VERSION" ]; then
+              echo "  Already up to date"
+              continue
+            fi
+
+            # Track the original version for PR description
+            if [ "$CURRENT_VERSION" = "unknown" ]; then
+              CURRENT_VERSION="$FILE_VERSION"
+            fi
+
+            # Update the esphome-version in the workflow file
+            # Handles both quoted and unquoted versions
+            sed -i -E "s/(esphome-version:\s*[\"']?)[0-9]+\.[0-9]+\.[0-9]+([\"']?)/\1${VERSION}\2/g" "$WORKFLOW_FILE"
+            UPDATED=true
+          done
+
+          echo "updated=$UPDATED" >> $GITHUB_OUTPUT
           echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
 
       - name: Create Pull Request
