@@ -28,8 +28,8 @@
     ]
   },
   {
-    "repo": "esphome/project-template",
-    "repo_name": "project-template",
+    "repo": "esphome/esphome-project-template",
+    "repo_name": "esphome-project-template",
     "workflow_files": [
       "publish-firmware.yml"
     ]
