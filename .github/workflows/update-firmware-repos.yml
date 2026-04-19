@@ -141,8 +141,8 @@ jobs:
             ---
             *This is an automated PR created by the ESPHome [version-notifier](https://github.com/${{ github.repository }}).*
           commit-message: "Update ESPHome to ${{ needs.prepare.outputs.version }}"
-          committer: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
-          author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
+          committer: "esphome[bot] <115708604+esphome[bot]@users.noreply.github.com>"
+          author: "esphome[bot] <115708604+esphome[bot]@users.noreply.github.com>"
           labels: |
             dependencies
             esphome
