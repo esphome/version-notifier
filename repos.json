@@ -35,5 +35,11 @@
       "build.yml",
       "build-minimal.yml"
     ]
+  },
+  {
+    "repo": "zwa-2",
+    "workflow_files": [
+      "build.yml"
+    ]
   }
 ]
