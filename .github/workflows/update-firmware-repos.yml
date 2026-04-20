@@ -102,24 +102,25 @@ jobs:
               continue
             fi
 
-            # Extract current version for comparison
-            FILE_VERSION=$(grep -oP 'esphome-version:\s*["\x27]?\K[0-9]+\.[0-9]+\.[0-9]+' "$WORKFLOW_FILE" | head -1 || echo "unknown")
-            echo "File: $FILE - Current version: $FILE_VERSION, Target version: $VERSION"
+            # Capture all versions before update for reporting
+            BEFORE_VERSIONS=$(grep -oP 'esphome-version:\s*["\x27]?\K[0-9]+\.[0-9]+\.[0-9]+' "$WORKFLOW_FILE" || true)
+            echo "File: $FILE - Versions before: ${BEFORE_VERSIONS:-none}, Target version: $VERSION"
 
-            if [ "$FILE_VERSION" = "$VERSION" ]; then
+            # Update every esphome-version occurrence (idempotent for matching versions).
+            # Handles both quoted and unquoted versions.
+            sed -i -E "s/(esphome-version:\s*[\"']?)[0-9]+\.[0-9]+\.[0-9]+([\"']?)/\1${VERSION}\2/g" "$WORKFLOW_FILE"
+
+            if git diff --quiet -- "$WORKFLOW_FILE"; then
               echo "  Already up to date"
               continue
             fi
 
-            # Track the original version for PR description
-            if [ "$CURRENT_VERSION" = "unknown" ]; then
-              CURRENT_VERSION="$FILE_VERSION"
-            fi
-
-            # Update the esphome-version in the workflow file
-            # Handles both quoted and unquoted versions
-            sed -i -E "s/(esphome-version:\s*[\"']?)[0-9]+\.[0-9]+\.[0-9]+([\"']?)/\1${VERSION}\2/g" "$WORKFLOW_FILE"
             UPDATED=true
+
+            # Track first differing pre-update version for the PR description
+            if [ "$CURRENT_VERSION" = "unknown" ]; then
+              CURRENT_VERSION=$(echo "$BEFORE_VERSIONS" | grep -v "^${VERSION}$" | head -1 || echo "unknown")
+            fi
           done
 
           echo "updated=$UPDATED" >> $GITHUB_OUTPUT
