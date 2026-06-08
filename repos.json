@@ -18,6 +18,18 @@
     ]
   },
   {
+    "repo": "infrared-proxies",
+    "workflow_files": [
+      "build.yml"
+    ]
+  },
+  {
+    "repo": "rf-proxies",
+    "workflow_files": [
+      "build.yml"
+    ]
+  },
+  {
     "repo": "media-players",
     "workflow_files": [
       "build.yml"
