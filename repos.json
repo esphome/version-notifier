@@ -30,6 +30,12 @@
     ]
   },
   {
+    "repo": "serial-proxies",
+    "workflow_files": [
+      "build.yml"
+    ]
+  },
+  {
     "repo": "media-players",
     "workflow_files": [
       "build.yml"
