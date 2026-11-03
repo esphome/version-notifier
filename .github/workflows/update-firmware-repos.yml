@@ -27,7 +27,7 @@ jobs:
 
       - name: Download version artifact
         if: github.event_name == 'workflow_run'
-        uses: actions/download-artifact@v8.0.1
+        uses: actions/download-artifact@v8.0.2
         with:
           name: esphome-version
           github-token: ${{ github.token }}
