@@ -48,6 +48,12 @@
     ]
   },
   {
+    "repo": "ready-made-project-template",
+    "workflow_files": [
+      "build.yml"
+    ]
+  },
+  {
     "repo": "wake-word-voice-assistants",
     "workflow_files": [
       "build.yml",
