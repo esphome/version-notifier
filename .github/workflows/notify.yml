@@ -23,7 +23,7 @@ jobs:
         run: echo "${{ inputs.version }}" > esphome_version.txt
 
       - name: Upload version artifact
-        uses: actions/upload-artifact@v7.0.1
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: esphome-version
           path: esphome_version.txt
